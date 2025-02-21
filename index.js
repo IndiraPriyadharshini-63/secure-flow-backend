@@ -9,10 +9,15 @@ app.use(express.json());
 app.use(cors());
 
 const users = [];
+const crypto = require("crypto");
+const secret = crypto.randomBytes(64).toString("hex");
 
 app.post("/register", async (req, res) => {
   try {
     const { username, password } = req.body;
+    //     if (!username || !password) {
+    //       return res.status(400).send("Username and password are required");
+    //     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
     users.push({ username, password: hashedPassword });
@@ -23,23 +28,29 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find((u) => u.username === username);
+  try {
+    const { username, password } = req.body;
+    //     if (!username || !password) {
+    //       return res.status(400).send("Username and password are required");
+    //     }
+    const user = users.find((u) => u.username === username);
 
-  if (!user) {
-    return res.status(400).send("User not found");
+    if (!user) {
+      return res.status(400).send("User not found");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).send("Invalid password");
+    }
+    const token = jwt.sign({ username: user.username }, secret, {
+      expiresIn: "1h",
+    });
+    res.json({ token });
+  } catch (error) {
+    res.status(500).send("Error logging in");
   }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordValid) {
-    return res.status(400).send("Invalid password");
-  }
-
-  const token = jwt.sign({ username: user.username }, "your-secret-key", {
-    expiresIn: "1h",
-  });
-  res.json({ token });
 });
 
 app.get("/protected", (req, res) => {
@@ -48,7 +59,7 @@ app.get("/protected", (req, res) => {
     return res.status(403).send("Token required");
   }
 
-  jwt.verify(token, "your-secret-key", (err, decoded) => {
+  jwt.verify(token, secret, (err, decoded) => {
     if (err) {
       return res.status(403).send("Invalid token");
     }
