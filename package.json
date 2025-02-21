@@ -1,0 +1,27 @@
+{
+  "name": "secure-flow-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IndiraPriyadharshini-63/secure-flow-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IndiraPriyadharshini-63/secure-flow-backend/issues"
+  },
+  "homepage": "https://github.com/IndiraPriyadharshini-63/secure-flow-backend#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
